@@ -1,0 +1,36 @@
+service: nodeless
+
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  lambdaHashingVersion: 20201221
+  memorySize: 256
+  iamRoleStatesments: 
+    - Effect: Allow
+      Action:
+        - s3:GetObject 
+        - s3:PutObject 
+      Resource:
+        - "arn:aws:s3:::*"
+
+functions:
+  optimize:
+    handler: optimize.handle
+    environment: 
+      bucket: serverlessnoderock
+    events: 
+      - s3:
+          bucket: serverlessnoderock
+          event: s3:ObjectCreated:*
+          rules: 
+            - prefix: upload/
+            - suffix: .jpg
+      - s3:
+          bucket: serverlessnoderock
+          event: s3:ObjectCreated:*
+          rules: 
+            - prefix: upload/
+            - suffix: .png
+            
